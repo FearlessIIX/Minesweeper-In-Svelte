@@ -1,0 +1,76 @@
+.form {
+    /* margin: 25px auto 25px auto; */
+    margin: 50px auto 0px;
+    width: 65vw;
+    height:80vh;
+    border:rgb(125, 125, 125) double 4px;
+    border-radius:13px;
+    background-color: rgb(200, 200, 200);
+}
+.btn-con {
+    margin-top: 45px;
+    width: 100%;
+    display:flex;
+    justify-content: center;
+    align-items:center;
+}
+.form button {
+    padding: 15px;
+    background-color: rgb(180, 180, 180);
+    border:rgb(125, 125, 125) double 4px;
+    border-radius:10px;
+    transition:background-color 0.5s;
+    cursor:pointer;
+}
+.form button:hover {
+    background-color:rgb(200, 200, 200);
+}
+.input {
+    border:solid;
+    width:75%;
+    height:70%;
+    margin: 15px auto;
+}
+.width {
+    margin:0 auto;
+    height:10%;
+    width:75%;
+    border: black solid 0px;
+    border-radius:15px;
+    background-color: rgb(190, 190, 190);
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+.height {
+    margin:0 auto;
+    height:10%;
+    width:75%;
+    border: black solid 0px;
+    border-radius:15px;
+    background-color: rgb(190, 190, 190);
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+.mines {
+    margin:0 auto;
+    height:10%;
+    width:75%;
+    border: black solid 0px;
+    border-radius:15px;
+    background-color: rgb(190, 190, 190);
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+.control-margin {
+    height:10%;
+}
+.form input {
+    margin:10px;
+}
+.Error {
+    color:red;
+    text-decoration: underline;
+}
