@@ -7,6 +7,7 @@ export class Tile {
     private _flipped : boolean = false;
     private _type : string;
     private _safety : number;
+    private _flagged : boolean = false;
 
     constructor(tNum: number) {
         this._tNum = tNum;
@@ -37,5 +38,11 @@ export class Tile {
     }
     public setSafety(safety) {
         this._safety = safety;
+    }
+    public flag(status : boolean) {
+        this._flagged = status;
+    }
+    public isFlagged() : boolean {
+        return this._flagged;
     }
 }
