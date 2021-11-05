@@ -1,4 +1,4 @@
-import { Tile }  from "./Tile"
+import { Tile } from "./Tile";
 
 export default class Grid {
     private _width : number;
@@ -20,7 +20,7 @@ export default class Grid {
         let tCount = 1;
         while (row <= this._height) {
             let col = 1;
-            while(col <= this._height) {
+            while(col <= this._width) {
                 this._grid.push(new Tile(tCount))
                 col++;
                 tCount++;
@@ -53,47 +53,53 @@ export default class Grid {
                     tile.setType("tr")
                     
                     //b, bl, l
-                    if (gd[tileNum + this._width].isMine()) surMines++;             //bottom
-                    if (gd[tileNum + (this._width - 1)].isMine()) surMines++;       //bottom left
-                    if (gd[tileNum - 1].isMine()) surMines++;                       //left
+                    
+                    if (this.getBottom(tileNum).isMine()) surMines += 1;        //bottom
+                    if (this.getBottomLeft(tileNum).isMine()) surMines += 1;    //bottom left
+                    if (this.getLeft(tileNum).isMine()) surMines += 1;          //left
+                    
                 }
                 else if (tile.getTNum() == 1) {
                     tile.setType("tl")
 
                     //r, br, b
-                    if (gd[tileNum + 1].isMine()) surMines++;                       //right
-                    if (gd[tileNum + (this._width + 1)].isMine()) surMines++        //bottom right
-                    if (gd[tileNum + this._width].isMine()) surMines++;             //bottom
+
+                    if (this.getRight(tileNum).isMine()) surMines += 1;         //right
+                    if (this.getBottomRight(tileNum).isMine()) surMines += 1;   //bottom right
+                    if (this.getBottom(tileNum).isMine()) surMines += 1;        //bottom
                 }
                 else {
                     tile.setType("t")
 
                     //r, br, b, bl, l
-                    if (gd[tileNum + 1].isMine()) surMines++;                       //right
-                    if (gd[tileNum + (this._width + 1)].isMine()) surMines++        //bottom right
-                    if (gd[tileNum + this._width].isMine()) surMines++;             //bottom
-                    if (gd[tileNum + (this._width - 1)].isMine()) surMines++;       //bottom left
-                    if (gd[tileNum - 1].isMine()) surMines++;                       //left
+
+                    if (this.getRight(tileNum).isMine()) surMines += 1;         //right
+                    if (this.getBottomRight(tileNum).isMine()) surMines += 1;   //bottom right
+                    if (this.getBottom(tileNum).isMine()) surMines += 1;        //bottom
+                    if (this.getBottomLeft(tileNum).isMine()) surMines += 1;    //bottom left
+                    if (this.getLeft(tileNum).isMine()) surMines += 1;          //left
                 }
             }
             else if (tileNum % this._width == 0) {
                 if (tileNum == (this._height * this._width)) {
                     tile.setType("br")
 
-                    //l, tl, t
-                    if (gd[tileNum - 1].isMine()) surMines++;                       //left
-                    if (gd[tileNum - (this._width + 1)].isMine()) surMines++;       //top left
-                    if (gd[tileNum - this._width].isMine()) surMines++              //top
+                    //t, l, tl
+
+                    if (this.getTop(tileNum).isMine()) surMines += 1;           //top
+                    if (this.getLeft(tileNum).isMine()) surMines += 1;          //left
+                    if (this.getTopLeft(tileNum).isMine()) surMines += 1;       //top left
                 }
                 else {
                     tile.setType("r")
 
-                    //b, bl, l, tl, t
-                    if (gd[tileNum + this._width].isMine()) surMines++;             //bottom
-                    if (gd[tileNum + (this._width - 1)].isMine()) surMines++;       //bottom left
-                    if (gd[tileNum - 1].isMine()) surMines++;                       //left
-                    if (gd[tileNum - (this._width + 1)].isMine()) surMines++;       //top left
-                    if (gd[tileNum - this._width].isMine()) surMines++              //top
+                    //t, b, bl, l, tl
+
+                    if (this.getTop(tileNum).isMine()) surMines += 1;           //top
+                    if (this.getBottom(tileNum).isMine()) surMines += 1;        //bottom
+                    if (this.getBottomLeft(tileNum).isMine()) surMines += 1;    //bottom left
+                    if (this.getLeft(tileNum).isMine()) surMines += 1;          //left
+                    if (this.getTopLeft(tileNum).isMine()) surMines += 1;       //top left
                 }
             }
             else if ((tileNum - 1) % this._width == 0) {
@@ -101,46 +107,86 @@ export default class Grid {
                     tile.setType("bl")
 
                     //t, tr, r
-                    if (gd[tileNum - this._width].isMine()) surMines++              //top
-                    if (gd[tileNum - (this._width - 1)].isMine()) surMines++;       //top right
-                    if (gd[tileNum + 1].isMine()) surMines++;                       //right
+
+                    if (this.getTop(tileNum).isMine()) surMines += 1;           //top
+                    if (this.getTopRight(tileNum).isMine()) surMines += 1;      //top right
+                    if (this.getRight(tileNum).isMine()) surMines += 1;         //right
                 }
                 else {
                     tile.setType("l")
 
                     //t, tr, r, br, b
-                    if (gd[tileNum - this._width].isMine()) surMines++              //top
-                    if (gd[tileNum - (this._width - 1)].isMine()) surMines++;       //top right
-                    if (gd[tileNum + 1].isMine()) surMines++;                       //right
-                    if (gd[tileNum + (this._width + 1)].isMine()) surMines++        //bottom right
-                    if (gd[tileNum + this._width].isMine()) surMines++;             //bottom
+
+                    if (this.getTop(tileNum).isMine()) surMines += 1;           //top
+                    if (this.getTopRight(tileNum).isMine()) surMines += 1;      //top right
+                    if (this.getRight(tileNum).isMine()) surMines += 1;         //right
+                    if (this.getBottomRight(tileNum).isMine()) surMines += 1;   //bottom right
+                    if (this.getBottom(tileNum).isMine()) surMines += 1;        //bottom
                 }
             }
-            else if (tileNum > (this._width * this._height - (this._height - 1))) {
+            else if (tileNum > (this._width * this._height - (this._width - 1))) {
                 tile.setType("b")
 
                 //t, tr, r, l, tl
-                if (gd[tileNum - this._width].isMine()) surMines++              //top
-                if (gd[tileNum - (this._width - 1)].isMine()) surMines++;       //top right
-                if (gd[tileNum + 1].isMine()) surMines++;                       //right
-                if (gd[tileNum - 1].isMine()) surMines++;                       //left
-                if (gd[tileNum - (this._width + 1)].isMine()) surMines++;       //top left
+
+                if (this.getTop(tileNum).isMine()) surMines += 1;           //top
+                if (this.getTopRight(tileNum).isMine()) surMines += 1;      //top right
+                if (this.getRight(tileNum).isMine()) surMines += 1;         //right
+                if (this.getLeft(tileNum).isMine()) surMines += 1;          //left
+                if (this.getTopLeft(tileNum).isMine()) surMines += 1;       //top left
             }
             else {
                 tile.setType("m")
 
                 //t, tr, r, br, b, bl, l, tl
-                if (gd[tileNum - this._width].isMine()) surMines++              //top
-                if (gd[tileNum - (this._width - 1)].isMine()) surMines++;       //top right
-                if (gd[tileNum + 1].isMine()) surMines++;                       //right
-                if (gd[tileNum + (this._width + 1)].isMine()) surMines++        //bottom right
-                if (gd[tileNum + this._width].isMine()) surMines++;             //bottom
-                if (gd[tileNum + (this._width - 1)].isMine()) surMines++;       //bottom left
-                if (gd[tileNum - 1].isMine()) surMines++;                       //left
-                if (gd[tileNum - (this._width + 1)].isMine()) surMines++;       //top left
+
+                if (this.getTop(tileNum).isMine()) surMines += 1;           //top
+                if (this.getTopRight(tileNum).isMine()) surMines += 1;      //top right
+                if (this.getRight(tileNum).isMine()) surMines += 1;         //right
+                if (this.getBottomRight(tileNum).isMine()) surMines += 1;   //bottom right
+                if (this.getBottom(tileNum).isMine()) surMines += 1;        //bottom
+                if (this.getBottomLeft(tileNum).isMine()) surMines += 1;    //bottom left
+                if (this.getLeft(tileNum).isMine()) surMines += 1;          //left
+                if (this.getTopLeft(tileNum).isMine()) surMines += 1;       //top left
+
             }
             tile.setSafety(surMines);
         }
         this._grid = gd
+    }
+
+    // ! Get rid of the commented console.log()'s in the functions below before pushing the final product 
+
+    public getTop(num : number) : Tile {
+        // console.log((num - 1) - this._width);
+        return this._grid[(num - 1) - this._width]
+    }
+    public getTopRight(num : number) : Tile {
+        // console.log(num - this._width);
+        return this._grid[num - this._width]
+    }
+    public getRight(num : number) : Tile {
+        // console.log(num);
+        return this._grid[num]
+    }
+    public getBottomRight(num : number) : Tile {
+        // console.log(num + this._width);
+        return this._grid[num + this._width]
+    }
+    public getBottom(num : number) : Tile {
+        // console.log((num - 1) + this._width);
+        return this._grid[(num - 1) + this._width]
+    }
+    public getBottomLeft(num : number) : Tile {
+        // console.log((num - 2) + this._width);
+        return this._grid[(num - 2) + this._width]
+    }
+    public getLeft(num : number) : Tile {
+        // console.log((num - 2));
+        return this._grid[(num - 2)]
+    }
+    public getTopLeft(num : number) : Tile {
+        // console.log((num - 1) - (this._width + 1));
+        return this._grid[(num - 1) - (this._width + 1)]
     }
 }
