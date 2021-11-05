@@ -3,12 +3,18 @@
     import { noop } from 'svelte/internal';
     import type { Tile}  from './utils/Tile'
     import Grid from './utils/Grid'
-    // onMount (fOnMount);
+
     let test : HTMLUListElement;
     let submitted = false;
     let wInput : HTMLInputElement;
     let hInput : HTMLInputElement;
     let nMinesInput : HTMLInputElement;
+    let flagCount : number = 0;
+    let flipCount : number = 0;
+    let totalMines : number = 1;
+    let totalTiles : number = 16;
+    let flagMode : boolean = false;
+
     var grid : Grid;
     var tileArr : Array<Tile>;
     
@@ -26,7 +32,7 @@
 
             while (col <= width) {
                 let tileNode : HTMLDivElement = document.createElement("div");
-                tileNode.innerText = `${mineCount}`;
+                tileNode.innerText = ``;
                 tileNode.className = `mine-node t-${mineCount}`;
 
                 currentRow.appendChild(tileNode);
@@ -40,24 +46,113 @@
         }
         //Genertating the js side of the mine logic
         grid = new Grid(width, height, mines)
-        tileArr = grid.retGrid()
+        tileArr = grid.retGrid();
+
+
+        totalMines = mines;
+        totalTiles = (width * height);
     }
     
-    function clickMine(event) {
+    function handleClick(event) {
         let elm : HTMLElement = event.target;
-        
         let mNum : number = parseInt(elm.className.split("-")[2])
         let gTile = tileArr[mNum - 1];
-        alert(gTile.getType())
-        if (!(gTile.isFlipped())) {
-            gTile.flip()
+
+        console.log(elm);
+        console.log(gTile);
+
+        if (elm.classList[0] == "flag-btn") {
+            if (flagMode) {
+                flagMode = false;
+                elm.style.backgroundColor = "rgb(200, 200, 200)";
+            }
+            else {
+                flagMode = true;
+                elm.style.backgroundColor = "#004D0D";
+            }
         }
-        if (gTile.isMine()) {
-            elm.innerText = "*";
-            elm.style.color = "red";
+        else if (event.ctrlKey || flagMode) {
+            if (gTile.isFlagged()) {
+                elm.innerText = "";
+                elm.style.color = "black";
+                gTile.flag(false);
+                flagCount--;
+            }
+            else {
+                if (!(gTile.isFlipped())) {
+                    elm.innerText = "?";
+                    elm.style.color = "magenta";
+                    gTile.flag(true);
+                    flagCount++;
+                }
+            }
         }
         else {
-            elm.innerText = `${gTile.getSafety()}`
+            if (!(gTile.isFlipped()) && !(gTile.isFlagged())) {
+                gTile.flip();
+                flipCount++;
+                if (gTile.isMine()) {
+                    elm.innerText = "*";
+                    elm.style.color = "black";
+                    elm.style.fontSize = "30px";
+                    alert("you lose");
+                    location.reload();
+                }
+                else {
+                    let safety = gTile.getSafety();
+                    elm.innerText = `${safety}`
+                    switch (safety) {
+                        case 0: {
+                            elm.innerText = "";
+                            elm.style.color = "rgb(200, 200, 200)";
+                            break;
+                        }
+                        case 1: {
+                            //#1F53FF
+                            elm.style.color = "blue";
+                            break;
+                        }
+                        case 2: {
+                            //#12FF31
+                            elm.style.color = "green";
+                            break;
+                        }
+                        case 3: {
+                            //#FF2E17
+                            elm.style.color = "red";
+                            break;
+                        }
+                        case 4: {
+                            //#021275
+                            elm.style.color = "darkblue";
+                            break;
+                        }
+                        case 5: {
+                            //#750202
+                            elm.style.color = "darkred";
+                            break;
+                        }
+                        case 6: {
+                            elm.style.color = "darkcyan";
+                            break;
+                        }
+                        case 7: {
+                            elm.style.color = "black";
+                            break;
+                        }
+                        case 8: {
+                            elm.style.color = "darkgrey";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (flagCount == totalMines) {
+            if ((flagCount + flipCount) == totalTiles) {
+                alert("you win!!");
+                location.reload();
+            }
         }
     }
 
@@ -84,9 +179,31 @@
         }
     }
 </script>
+<!-- This is the container for the different counts for gameplay -->
+{#if submitted}
+<div class="topbar">
+    <div class="node">
+        <label for="mine-count">Mines: </label>
+        <h1 name="mine-count">{totalMines}</h1>
+    </div>
+    <div class="node">
+        <label for="tile-count">Tiles: </label>
+        <h1 name="tile-count">{totalTiles}</h1>
+    </div>
+    <div class="node">
+        <label for="flag-count">Flagged: </label>
+        <h1 name="flag-count">{flagCount}</h1>
+    </div>
+    <div class="node">
+        <label for="flip-count">Flipped: </label>
+        <h1 name="flip-count">{flipCount}</h1>
+    </div>
+    <button class="flag-btn" on:click={handleClick}>Flag</button>
+</div>
+{/if}
 
 <!-- This is the container for all of the mines that will be generated -->
-<ul bind:this={test} on:click={clickMine}></ul>
+<ul bind:this={test} on:click={handleClick}></ul>
 
 <!-- This is the container for the form to get the width and height for the mine-grid -->
 {#if !submitted}
@@ -96,18 +213,18 @@
 
     <div class="width">
         <label for="width">Grid Width</label>
-        <input type="number" id="width" name="width" min="4" value="4" bind:this={wInput}>
+        <input type="number" id="width" name="width" min="4" value="9" bind:this={wInput}>
     </div>
 
     <div class="control-margin"></div>
     <div class="height">
         <label for="height">Grid Height</label>
-        <input type="number" id="height" name="height" min="4" value="4" bind:this={hInput} >
+        <input type="number" id="height" name="height" min="4" value="9" bind:this={hInput} >
     </div>
     <div class="control-margin"></div>
     <div class="mines">
         <label for="num-mines">Number Of Mines</label> 
-        <input type="number" id="num-mines" name="num-mines" min="1" value="1" bind:this={nMinesInput}>
+        <input type="number" id="num-mines" name="num-mines" min="1" value="15" bind:this={nMinesInput}>
     </div>
 
     <div class="control-margin"></div>
@@ -121,4 +238,5 @@
 <style>
     @import "./Style/Form.css";
     @import "./Style/Mines.css";
+    @import "./Style/Topbar.css";
 </style>
